@@ -24,4 +24,9 @@ public class SecurityUtils {
         }
         return sb.toString();
     }
+
+    public static boolean validateOTP(String userOTP) {
+        // Simulated validation: correct OTP is "123456"
+        return userOTP != null && userOTP.equals("123456");
+    }
 }

@@ -182,6 +182,20 @@ public class BankingAppGUI extends JFrame {
                         return;
                     }
                     
+                    // MFA: Prompt for OTP after password validation
+                    String otp = JOptionPane.showInputDialog(
+                        this, 
+                        "An OTP has been sent to your registered device. Please enter it here:", 
+                        "MFA Required", 
+                        JOptionPane.QUESTION_MESSAGE
+                    );
+                    
+                    if (otp == null || !SecurityUtils.validateOTP(otp)) {
+                        JOptionPane.showMessageDialog(this, "Invalid OTP. Access denied.",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
                     // Generate and store new CSRF token
                     String csrfToken = SecurityUtils.generateCsrfToken();
                     AccountDAO.updateCsrfToken(account.getUsername(), csrfToken);
@@ -198,7 +212,7 @@ public class BankingAppGUI extends JFrame {
                             "Error", JOptionPane.ERROR_MESSAGE);
                 }
             });
-            
+               
             backButton.addActionListener(e -> {
                 userField.setText("");
                 passField.setText("");
