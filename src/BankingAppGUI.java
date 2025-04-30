@@ -182,6 +182,11 @@ public class BankingAppGUI extends JFrame {
                         return;
                     }
                     
+                    // Generate and store new CSRF token
+                    String csrfToken = SecurityUtils.generateCsrfToken();
+                    AccountDAO.updateCsrfToken(account.getUsername(), csrfToken);
+                    account.setCsrfToken(csrfToken);
+                    
                     currentAccount = account;
                     ((AccountPanel) mainPanel.getComponent(3)).updateAccountInfo();
                     userField.setText("");
@@ -258,7 +263,9 @@ public class BankingAppGUI extends JFrame {
                     if (amount <= 0) throw new NumberFormatException();
                     
                     currentAccount.deposit(amount);
-                    AccountDAO.updateBalance(currentAccount.getUsername(), currentAccount.getBalance());
+                    AccountDAO.updateBalance(currentAccount.getUsername(), 
+                            currentAccount.getBalance(), 
+                            currentAccount.getCsrfToken());
                     updateAccountInfo();
                     depositField.setText("");
                     JOptionPane.showMessageDialog(this, "Deposit successful!",
@@ -276,7 +283,9 @@ public class BankingAppGUI extends JFrame {
                     if (amount <= 0) throw new NumberFormatException();
                     
                     if (currentAccount.withdraw(amount)) {
-                        AccountDAO.updateBalance(currentAccount.getUsername(), currentAccount.getBalance());
+                        AccountDAO.updateBalance(currentAccount.getUsername(), 
+                                currentAccount.getBalance(), 
+                                currentAccount.getCsrfToken());
                         updateAccountInfo();
                         withdrawField.setText("");
                         JOptionPane.showMessageDialog(this, "Withdrawal successful!",
@@ -302,7 +311,8 @@ public class BankingAppGUI extends JFrame {
 
         public void updateAccountInfo() {
             if (currentAccount != null) {
-                welcomeLabel.setText("Welcome, " + currentAccount.getUsername());
+                String safeUsername = SecurityUtils.escapeHtml(currentAccount.getUsername());
+                welcomeLabel.setText("Welcome, " + safeUsername);
                 balanceLabel.setText("Balance: €" + currentAccount.getBalance());
             }
         }
