@@ -33,7 +33,6 @@ public class PasswordEncryptionService {
 
     // Generates an 8-byte (64-bit) salt as recommended by RSA PKCS5 using a secure random number generator.
     public static byte[] generateSalt() throws NoSuchAlgorithmException {
-        // It's very important to use SecureRandom instead of just Random.
         SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
         byte[] salt = new byte[8]; // 8 bytes (64 bits) of salt
         random.nextBytes(salt);
