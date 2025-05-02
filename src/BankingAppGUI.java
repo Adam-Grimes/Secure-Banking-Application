@@ -13,19 +13,23 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 public class BankingAppGUI extends JFrame {
+    // Main layout and components for the GUI
     private CardLayout cardLayout;
     private JPanel mainPanel;
     private Account currentAccount;
 
+    // Constructor to initialize the GUI
     public BankingAppGUI() {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
+        // Adding different panels to the main panel
         mainPanel.add(new WelcomePanel(), "welcome");
         mainPanel.add(new CreateAccountPanel(), "create");
         mainPanel.add(new LoginPanel(), "login");
         mainPanel.add(new AccountPanel(), "account");
 
+        // Setting up the main frame
         add(mainPanel);
         setTitle("Secure Banking App");
         setSize(400, 350);
@@ -34,6 +38,7 @@ public class BankingAppGUI extends JFrame {
         setVisible(true);
     }
 
+    // Panel displayed when the app starts
     class WelcomePanel extends JPanel {
         public WelcomePanel() {
             setLayout(new GridBagLayout());
@@ -41,12 +46,15 @@ public class BankingAppGUI extends JFrame {
             gbc.insets = new Insets(10, 10, 10, 10);
             gbc.fill = GridBagConstraints.HORIZONTAL;
             
+            // Buttons for navigation
             JButton createAccountButton = new JButton("Create Account");
             JButton loginButton = new JButton("Login");
             
+            // Adding action listeners to navigate between panels
             createAccountButton.addActionListener(e -> cardLayout.show(mainPanel, "create"));
             loginButton.addActionListener(e -> cardLayout.show(mainPanel, "login"));
             
+            // Adding buttons to the panel
             gbc.gridx = 0;
             gbc.gridy = 0;
             add(createAccountButton, gbc);
@@ -55,6 +63,7 @@ public class BankingAppGUI extends JFrame {
         }
     }
 
+    // Panel for creating a new account
     class CreateAccountPanel extends JPanel {
         public CreateAccountPanel() {
             setLayout(new GridBagLayout());
@@ -62,6 +71,7 @@ public class BankingAppGUI extends JFrame {
             gbc.insets = new Insets(5, 5, 5, 5);
             gbc.fill = GridBagConstraints.HORIZONTAL;
             
+            // Input fields and buttons
             JLabel userLabel = new JLabel("Username:");
             JTextField userField = new JTextField(15);
             JLabel passLabel = new JLabel("Password:");
@@ -69,6 +79,7 @@ public class BankingAppGUI extends JFrame {
             JButton createButton = new JButton("Create");
             JButton backButton = new JButton("Back");
             
+            // Adding components to the panel
             gbc.gridx = 0;
             gbc.gridy = 0;
             add(userLabel, gbc);
@@ -85,12 +96,20 @@ public class BankingAppGUI extends JFrame {
             gbc.gridx = 1;
             add(backButton, gbc);
 
+            // Action listener for creating an account
             createButton.addActionListener(e -> {
                 String username = userField.getText().trim();
                 String password = new String(passField.getPassword());
                 
                 if (username.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Username and password cannot be empty",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (!SecurityUtils.isValidPassword(password)) {
+                    JOptionPane.showMessageDialog(this, "Password must be at least 8 characters long, "
+                            + "contain an uppercase letter, a lowercase letter, a digit, and a special character.",
                             "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -108,6 +127,7 @@ public class BankingAppGUI extends JFrame {
                         return;
                     }
                     
+                    // Encrypting password and creating the account
                     byte[] salt = PasswordEncryptionService.generateSalt();
                     byte[] encryptedPassword = PasswordEncryptionService.getEncryptedPassword(password, salt);
                     Account newAccount = new Account(username, encryptedPassword, salt);
@@ -125,6 +145,7 @@ public class BankingAppGUI extends JFrame {
                 }
             });
             
+            // Action listener for navigating back to the welcome panel
             backButton.addActionListener(e -> {
                 userField.setText("");
                 passField.setText("");
@@ -133,6 +154,7 @@ public class BankingAppGUI extends JFrame {
         }
     }
 
+    // Panel for logging into an account
     class LoginPanel extends JPanel {
         public LoginPanel() {
             setLayout(new GridBagLayout());
@@ -140,6 +162,7 @@ public class BankingAppGUI extends JFrame {
             gbc.insets = new Insets(5, 5, 5, 5);
             gbc.fill = GridBagConstraints.HORIZONTAL;
             
+            // Input fields and buttons
             JLabel userLabel = new JLabel("Username:");
             JTextField userField = new JTextField(15);
             JLabel passLabel = new JLabel("Password:");
@@ -147,6 +170,7 @@ public class BankingAppGUI extends JFrame {
             JButton loginButton = new JButton("Login");
             JButton backButton = new JButton("Back");
             
+            // Adding components to the panel
             gbc.gridx = 0;
             gbc.gridy = 0;
             add(userLabel, gbc);
@@ -163,6 +187,7 @@ public class BankingAppGUI extends JFrame {
             gbc.gridx = 1;
             add(backButton, gbc);
 
+            // Action listener for logging in
             loginButton.addActionListener(e -> {
                 String username = userField.getText().trim();
                 String password = new String(passField.getPassword());
@@ -213,6 +238,7 @@ public class BankingAppGUI extends JFrame {
                 }
             });
                
+            // Action listener for navigating back to the welcome panel
             backButton.addActionListener(e -> {
                 userField.setText("");
                 passField.setText("");
@@ -221,6 +247,7 @@ public class BankingAppGUI extends JFrame {
         }
     }
 
+    // Panel for managing the logged-in account
     class AccountPanel extends JPanel {
         private JLabel welcomeLabel = new JLabel("Welcome, ");
         private JLabel balanceLabel = new JLabel("Balance: €0.0");
@@ -233,10 +260,12 @@ public class BankingAppGUI extends JFrame {
             gbc.insets = new Insets(5, 5, 5, 5);
             gbc.fill = GridBagConstraints.HORIZONTAL;
             
+            // Buttons for account actions
             JButton depositButton = new JButton("Deposit");
             JButton withdrawButton = new JButton("Withdraw");
             JButton logoutButton = new JButton("Logout");
             
+            // Adding components to the panel
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.gridwidth = 2;
@@ -271,6 +300,7 @@ public class BankingAppGUI extends JFrame {
             gbc.gridwidth = 2;
             add(logoutButton, gbc);
 
+            // Action listener for depositing money
             depositButton.addActionListener(e -> {
                 try {
                     double amount = Double.parseDouble(depositField.getText());
@@ -291,6 +321,7 @@ public class BankingAppGUI extends JFrame {
                 }
             });
 
+            // Action listener for withdrawing money
             withdrawButton.addActionListener(e -> {
                 try {
                     double amount = Double.parseDouble(withdrawField.getText());
@@ -315,6 +346,7 @@ public class BankingAppGUI extends JFrame {
                 }
             });
 
+            // Action listener for logging out
             logoutButton.addActionListener(e -> {
                 currentAccount = null;
                 depositField.setText("");
@@ -323,6 +355,7 @@ public class BankingAppGUI extends JFrame {
             });
         }
 
+        // Updates the account information displayed on the panel
         public void updateAccountInfo() {
             if (currentAccount != null) {
                 String safeUsername = SecurityUtils.escapeHtml(currentAccount.getUsername());
@@ -332,6 +365,7 @@ public class BankingAppGUI extends JFrame {
         }
     }
 
+    // Main method to launch the application
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new BankingAppGUI());
     }
