@@ -6,12 +6,12 @@ This project is a desktop banking application built in Java, with a primary focu
 
 This application was built with a security-first mindset, incorporating the following measures:
 
-* **Password Hashing:** User passwords are **never** stored in plaintext. All passwords are encrypted using **PBKDF2WithHmacSHA1** with a unique, randomly-generated 8-byte **salt** for each user.
-* **SQL Injection Prevention:** All database queries are executed using **PreparedStatements**. This ensures that user input is never directly concatenated into SQL strings, mitigating the risk of SQL injection attacks.
-* **Cross-Site Request Forgery (CSRF) Protection:** All sensitive actions (like deposits and withdrawals) are authorized using a unique **CSRF token** that is generated at login and validated with every transaction.
-* **Cross-Site Scripting (XSS) Prevention:** All user-provided data (like usernames) is sanitized using **HTML escaping** before being displayed in the GUI, preventing malicious scripts from being rendered.
-* **Multi-Factor Authentication (MFA):** A simulated **OTP (One-Time Password)** check is implemented during the login process to demonstrate a multi-factor authentication workflow.
-* **Secure Input Validation:** Strict validation rules are applied to usernames (regex) and passwords (checking for length, case, numbers, and special characters) before account creation.
+* **Strong Password Hashing:** User passwords are **never** stored in plaintext. Passwords are hashed using **PBKDF2** (e.g., `PBKDF2WithHmacSHA256`) with a unique, randomly-generated **salt of at least 16 bytes** and a high iteration count (100,000+) to resist brute-force attacks.
+* **SQL Injection Prevention:** All database queries are executed using **PreparedStatements** (parameterized queries). This ensures that user input is never directly concatenated into SQL strings, mitigating the risk of SQL injection attacks.
+* **Desktop GUI Input Validation & Output Encoding:** Traditional web vulnerabilities (like XSS) are handled by strictly validating user input and escaping data before it is rendered in UI components. This prevents the injection of executable content or HTML into the Swing interface.
+* **Multi-Factor Authentication (MFA):** A simulated **OTP (One-Time Password)** workflow is implemented during the login process to demonstrate multi-factor authentication concepts.
+* **Secure Input Validation:** Strict validation rules are applied to usernames (regex) and passwords (enforcing minimum length, mixed cases, digits, and special characters) before account creation.
+* **Secure Secrets Handling:** Cryptographic keys, database credentials, and salts are designed to be loaded from external configuration (environment variables or protected config files) rather than being hardcoded, preventing secrets leakage in source control.
 
 ---
 
@@ -19,6 +19,19 @@ This application was built with a security-first mindset, incorporating the foll
 
 * **Language:** Java
 * **Framework/Toolkit:** Java Swing (for the GUI)
-* **Database:** MySQL
+* **Database:** MySQL (or compatible JDBC-backed relational DB)
 * **Database Connectivity:** JDBC (Java Database Connectivity)
-* **Security Libraries:** `java.security` and `javax.crypto` for hashing and salt generation.
+* **Security Libraries:** `java.security` and `javax.crypto` (for PBKDF2 hashing and secure random generation).
+
+---
+
+## ⚙️ Running the Application (high-level)
+
+1.  **Clone the repository.**
+2.  Ensure you have a compatible Java version installed (check project docs or build files for exact requirements).
+3.  **Create and configure the database:**
+    * Create the required schema and tables (look for any SQL files or scripts in the repo).
+    * Configure DB connection settings in the application's configuration file (do **not** store production passwords in source control).
+4.  Build and run the application from your IDE or using your chosen build tool.
+5.  For testing MFA/OTP flows and other demo security features, follow the in-app prompts.
+
