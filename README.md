@@ -33,5 +33,4 @@ This application was built with a security-first mindset, incorporating the foll
     * Create the required schema and tables (look for any SQL files or scripts in the repo).
     * Configure DB connection settings in the application's configuration file (do **not** store production passwords in source control).
 4.  Build and run the application from your IDE or using your chosen build tool.
-5.  For testing MFA/OTP flows and other demo security features, follow the in-app prompts.
 
